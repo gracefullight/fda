@@ -3,6 +3,10 @@ from pathlib import Path
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import ConfusionMatrixDisplay, classification_report, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 
 def load_iris_data() -> pd.DataFrame:
@@ -14,6 +18,7 @@ def load_iris_data() -> pd.DataFrame:
 
 def iris_head(df: pd.DataFrame, n: int = 5) -> None:
     """Display the first n rows of iris dataset."""
+    df = df.drop(["Row"], axis=1)
     print(df.head(n))  # noqa: T201
 
 
@@ -82,4 +87,83 @@ def iris_series(df: pd.DataFrame) -> None:
     sns.despine(fig=fig, ax=ax)
     plt.xlabel("Row")
     plt.ylabel("Sepal.Length")
+    plt.show()
+
+
+def iris_label_encoder(df: pd.DataFrame) -> None:
+    """Label encode the 'Species' column in the iris dataset."""
+    # LabelEncoder 객체 생성
+    le = LabelEncoder()
+    df = df.drop(["Row"], axis=1)
+    # 'Species' 컬럼을 label encoding하여 새로운 'Species_Encoded' 컬럼 생성
+    df["Species"] = le.fit_transform(df["Species"])
+    # target 변수에 고유한 species 값 저장
+    target = df["Species"].unique()
+    # target_code 딕셔너리 생성: species 이름을 인덱스로, 고유 번호를 값으로 매핑
+    target_code = dict(zip(target, range(len(target)), strict=False))
+    print(target_code)  # noqa: T201
+
+    # 'Species' 컬럼의 값을 target_code 딕셔너리로 매핑
+    df["Species"] = df["Species"].apply(lambda x: target_code[x])
+    print(df.head(5))  # noqa: T201
+
+    # 데이터프레임에서 마지막 컬럼을 제외한 나머지 컬럼을 X로, 마지막 컬럼을 y로 분리
+    x = df.iloc[:, :-1]
+    # 마지막 컬럼 Species를 y로 설정
+    y = df.iloc[:, -1].copy()
+
+    # train_test_split을 사용하여 데이터를 학습용과 테스트용으로 분리
+    # test_size=0.3: 전체 데이터의 30%를 테스트용으로
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3)
+    print("X_train:", x_train.shape)
+    print("y_train:", y_train.shape)
+    print("X_test:", x_test.shape)
+    print("y_test:", y_test.shape)
+
+    # RandomForestClassifier 모델 생성 및 학습
+    # n_estimators=50: 50개의 결정 트리 사용
+    # max_features="sqrt": 각 트리에서 사용할 최대 특성 수를 제곱근으로 설정
+    # (Iris 4개 특성 → sqrt(4)=2개씩만 랜덤 선택하여 트리 다양성 증가, 과적합 방지)
+    # oob_score=True: Out-Of-Bag 샘플을 사용하여 모델 성능을 자동으로 검증
+    # 랜덤포레스트는 각 트리 학습 시마다 중복 허용 랜덤 추출
+    # 이 과정에서 일부 샘플은 사용되지 않고 남음 → OOB 샘플
+    # OOB 샘플은 모델 검증용으로 활용되어 성능 평가에 사용
+    clf = RandomForestClassifier(n_estimators=50, max_features="sqrt", oob_score=True)
+    clf.fit(x_train, y_train)
+
+    print(clf)
+    print("Feature importances:", clf.feature_importances_)
+    print(f"oob score is {clf.oob_score_:.3f}")
+
+    test_idx = 20
+    # 테스트용 데이터에서 특정 인덱스의 데이터를 선택
+    test_point = x_test.iloc[test_idx]
+
+    # DataFrame 형태로 예측하여 feature name 경고 방지
+    # Series를 1행 DataFrame으로 변환 (to_frame().T)
+    pred_test = clf.predict(test_point.to_frame().T)
+    # 선택한 테스트 데이터에 대한 예측 확률 계산
+    pred_test_probs = clf.predict_proba(test_point.to_frame().T)
+
+    # 예측 결과 출력
+    print(
+        "Testing point\n",
+        test_point,
+        ";\npredicted as",
+        pred_test[0],
+        ";\nactually",
+        y_test.iloc[test_idx],
+        ";\nprobabilities",
+        pred_test_probs[0],
+    )
+
+    # 전체 테스트 데이터에 대한 예측 수행
+    y_pred = clf.predict(x_test)
+    # classification_report: 정밀도, 재현율, F1-score 등 상세 성능 지표 출력
+    print(classification_report(y_test, y_pred))  # noqa: T201
+    # 혼동 행렬 계산: 실제값 vs 예측값의 교차표
+    conf_max = confusion_matrix(y_test, y_pred)
+    # 혼동 행렬을 시각화하여 화면에 표시
+    ConfusionMatrixDisplay(conf_max).plot()
+    # matplotlib 그래프를 화면에 표시
     plt.show()
