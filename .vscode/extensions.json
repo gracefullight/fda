@@ -1,7 +1,8 @@
 {
   "recommendations": [
-    "ms-python.python",
     "charliermarsh.ruff",
+    "mechatroner.rainbow-csv",
+    "ms-python.python",
     "ms-python.mypy-type-checker",
     "ms-toolsai.jupyter"
   ]
