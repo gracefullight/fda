@@ -19,7 +19,7 @@ def load_iris_data() -> pd.DataFrame:
 def iris_head(df: pd.DataFrame, n: int = 5) -> None:
     """Display the first n rows of iris dataset."""
     df = df.drop(["Row"], axis=1)
-    print(df.head(n))  # noqa: T201
+    print(df.head(n))
 
 
 def iris_scatter_pandas(df: pd.DataFrame) -> None:
@@ -49,10 +49,10 @@ def iris_scatter_seaborn(df: pd.DataFrame) -> None:
 
 def iris_scatter(df: pd.DataFrame) -> None:
     """pandas와 seaborn 산점도 모두 보여주기"""
-    print("1. pandas 기본 plot:")  # noqa: T201
+    print("1. pandas 기본 plot:")
     iris_scatter_pandas(df)
 
-    print("2. seaborn plot (species별 색상 구분):")  # noqa: T201
+    print("2. seaborn plot (species별 색상 구분):")
     iris_scatter_seaborn(df)
 
 
@@ -101,11 +101,11 @@ def iris_label_encoder(df: pd.DataFrame) -> None:
     target = df["Species"].unique()
     # target_code 딕셔너리 생성: species 이름을 인덱스로, 고유 번호를 값으로 매핑
     target_code = dict(zip(target, range(len(target)), strict=False))
-    print(target_code)  # noqa: T201
+    print(target_code)
 
     # 'Species' 컬럼의 값을 target_code 딕셔너리로 매핑
     df["Species"] = df["Species"].apply(lambda x: target_code[x])
-    print(df.head(5))  # noqa: T201
+    print(df.head(5))
 
     # 데이터프레임에서 마지막 컬럼을 제외한 나머지 컬럼을 X로, 마지막 컬럼을 y로 분리
     x = df.iloc[:, :-1]
@@ -160,7 +160,7 @@ def iris_label_encoder(df: pd.DataFrame) -> None:
     # 전체 테스트 데이터에 대한 예측 수행
     y_pred = clf.predict(x_test)
     # classification_report: 정밀도, 재현율, F1-score 등 상세 성능 지표 출력
-    print(classification_report(y_test, y_pred))  # noqa: T201
+    print(classification_report(y_test, y_pred))
     # 혼동 행렬 계산: 실제값 vs 예측값의 교차표
     conf_max = confusion_matrix(y_test, y_pred)
     # 혼동 행렬을 시각화하여 화면에 표시
