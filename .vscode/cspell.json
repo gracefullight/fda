@@ -10,9 +10,12 @@
     "pycache",
     "pytest",
     "pythonpath",
+    "scatterplot",
     "scikit",
     "seaborn",
     "setuptools",
-    "venv"
+    "venv",
+    "xlabel",
+    "ylabel"
   ]
 }
