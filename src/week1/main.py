@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 
 def load_iris_data() -> pd.DataFrame:
     """Load iris dataset from assets directory."""
-    current_dir = Path(__file__).parent
+    current_dir = Path(__file__).parent.parent
     assets_path = current_dir / "assets" / "iris.csv"
     return pd.read_csv(assets_path)
 
@@ -35,7 +35,7 @@ def iris_scatter_pandas(df: pd.DataFrame) -> None:
 
 
 def iris_scatter_seaborn(df: pd.DataFrame) -> None:
-    """seaborn으로 species별 색상 구분된 산점도 생성"""
+    """seaborn으로 species별 색상 구분된 산점도 생성."""
     plt.figure(figsize=(10, 6))
     # seaborn의 scatterplot 예쁜 산점도 생성
     sns.scatterplot(data=df, x="Sepal.Width", y="Petal.Length", hue="Species", s=50, alpha=0.8)
@@ -48,7 +48,7 @@ def iris_scatter_seaborn(df: pd.DataFrame) -> None:
 
 
 def iris_scatter(df: pd.DataFrame) -> None:
-    """pandas와 seaborn 산점도 모두 보여주기"""
+    """pandas와 seaborn 산점도 모두 보여주기."""
     print("1. pandas 기본 plot:")
     iris_scatter_pandas(df)
 
@@ -167,3 +167,27 @@ def iris_label_encoder(df: pd.DataFrame) -> None:
     ConfusionMatrixDisplay(conf_max).plot()
     # matplotlib 그래프를 화면에 표시
     plt.show()
+
+
+def run_week1() -> None:
+    """Week1의 모든 실습을 순차적으로 실행하는 메인 함수."""
+    print("=== Week 1: Iris Dataset Analysis ===")
+
+    # 1. 데이터 로드 및 기본 정보 확인
+    print("\n1. 데이터 로드 및 기본 정보:")
+    iris = load_iris_data()
+    iris_head(iris)
+
+    # 2. 시각화: pandas vs seaborn 산점도 비교
+    print("\n2. 산점도 시각화 (pandas vs seaborn):")
+    iris_scatter(iris)
+
+    # 3. 시계열 시각화
+    print("\n3. Species별 시계열 시각화:")
+    iris_series(iris)
+
+    # 4. 머신러닝: 라벨 인코딩 및 Random Forest 분류
+    print("\n4. 머신러닝 분석:")
+    iris_label_encoder(iris)
+
+    print("\n=== Week 1 Complete! ===")

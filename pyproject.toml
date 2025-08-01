@@ -28,7 +28,7 @@ dev = [
 pythonpath = ["."]
 
 [tool.poe.tasks]
-run = "python src/main.py"
+run = "python -m src.main"
 test = "pytest tests"
 test-cov = "pytest tests --cov=src"
 lint = "ruff check src/ tests/"
