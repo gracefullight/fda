@@ -1,4 +1,4 @@
-from src.week1 import run_week1
+from src.week2 import run_week2
 
 
 def main() -> None:
@@ -6,8 +6,7 @@ def main() -> None:
     print("FDA (Fundamentals of Data Analysis) Course")
     print("=" * 50)
 
-    # Week 1 전체 실행
-    run_week1()
+    run_week2()
 
 
 if __name__ == "__main__":
